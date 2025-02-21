@@ -1,10 +1,11 @@
-<script>
+<script lang="ts">
 	import { API } from '$lib/api/API';
 	import ParentNode from '$lib/components/Nodes/ParentNode.svelte';
+	import { createScene } from '$lib/scene';
 	import { SvelteFlow, Background, Controls, Position } from '@xyflow/svelte';
 	import '@xyflow/svelte/dist/style.css';
-	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+	let el: HTMLCanvasElement;
 
 	const nodeTypes = {
 		parent: ParentNode
@@ -44,25 +45,30 @@
 	}
 	function handleNodeClick({ detail }) {
 		const label = detail.node.data.label;
+		console.log(label);
 
 		switch (label) {
 			case 'Shapes':
 				if ($nodes.length === 1) getNodes();
 				else $nodes = [parentNode];
 				break;
+			default:
+				createScene(el, label);
 		}
 	}
 </script>
 
-<main class="border">
-	<SvelteFlow on:nodeclick={handleNodeClick} {nodes} {edges} {nodeTypes}>
-		<Background />
-		<Controls />
-	</SvelteFlow>
+<main class="flex flex-col">
+	<div class="h-[50vh]">
+		<canvas class="h-full w-full bg-black" bind:this={el}></canvas>
+	</div>
+	<div class="h-[50vh]">
+		<SvelteFlow on:nodeclick={handleNodeClick} {nodes} {edges} {nodeTypes}>
+			<Background />
+			<Controls />
+		</SvelteFlow>
+	</div>
 </main>
 
 <style>
-	main {
-		height: 100vh;
-	}
 </style>
